@@ -1,7 +1,10 @@
+from typing import Any
 import numpy as np
-from pyGDM2 import structures
 
-def nanoparticle_geometry(particle_type, step_nm, center=True, **kwargs):
+from pyGDM2 import structures
+from pyGDM2 import materials
+
+def nanoparticle_geometry(particle_type: str, step_nm: float, center: bool, **kwargs: Any) -> np.ndarray:
     """
     Generate a nanoparticle geometry using pyGDM2.structures.
 
@@ -24,7 +27,7 @@ def nanoparticle_geometry(particle_type, step_nm, center=True, **kwargs):
     center : bool
         If True, center the geometry around its center of mass.
 
-    **kwargs
+    **kwargs : Any
         Arguments required by the selected pyGDM geometry.
 
     Returns
@@ -45,3 +48,37 @@ def nanoparticle_geometry(particle_type, step_nm, center=True, **kwargs):
         geometry = geometry - np.mean(geometry, axis=0)
 
     return geometry
+
+def nanoparticle_material(material_name: str, **kwargs: Any) -> Any:
+     """
+    Generate a material using pyGDM2.materials.
+
+    Parameters
+    ----------
+    material_name : str
+        Name of the pyGDM material function.
+        Examples:
+            "sio2"
+            "gold"
+            "silver"
+            "alu"
+            "dummy"
+
+    **kwargs : Any
+        Arguments required by the selected material function.
+
+    Returns
+    -------
+    material : Any
+        pyGDM material object.
+    """
+     if not hasattr(materials, material_name):
+        raise ValueError(f"Material '{material_name}' does not exist in pyGDM2.materials."
+             "Check the available pyGDM materials here:\n"
+            "https://homepages.laas.fr/pwiecha/pygdm_doc/apidoc_sim_description.html#materials"
+        )
+     material_function = getattr(materials, material_name)
+     material = material_function(**kwargs)
+
+     return material
+
