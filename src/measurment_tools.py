@@ -204,13 +204,7 @@ def torque_vs_rotation(geometry: np.ndarray, step_nm: float, material: Any, efie
 
     return Torque
 
-def recoil_force_noise_psd(
-    Escat: np.ndarray,
-    wavelength_nm: float,
-    Nteta: int,
-    Nphi: int,
-    mode_axis: int,
-) -> float:
+def recoil_force_noise_psd(Escat: np.ndarray, wavelength_nm: float, Nteta: int, Nphi: int, mode_axis: int) -> float:
     """
     Compute the recoil force-noise PSD S_FF along a mechanical mode.
 
