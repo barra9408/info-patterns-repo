@@ -35,7 +35,7 @@ def filling_factor(w_0: float, f: float, NA: float, n_medium: float) -> float:
 
 def richards_wolf_gaussian_efield(pos: np.ndarray, env_dict: dict[str, Any], wavelength: float, n_medium: float, NA: float, Ntheta: int, Nphi: int, gamma: float | None, f: float | None, 
                                   w_0: float | None, E0: float, polarization_state: Sequence[complex], xSpot: float, ySpot: float, zSpot: float, 
-                                  returnField: Literal["E", "B", "H"]) -> np.ndarray:
+                                  returnField: Literal["E", "B", "H"] = "E") -> np.ndarray:
     """
     Richards-Wolf focused Gaussian incident electric field for pyGDM2.
 
@@ -177,7 +177,7 @@ def richards_wolf_gaussian_efield(pos: np.ndarray, env_dict: dict[str, Any], wav
 from scipy import special
 
 def parabolic_mirror_efield(pos: np.ndarray, env_dict: dict[str, Any], wavelength: float, n_medium: float, f: float, alpha_0: float, alpha_1: float, w_0: float, N: float, 
-                            theta_size: int, xSpot: float, ySpot: float, zSpot: float, returnField: Literal["E", "B", "H"]) -> np.ndarray:
+                            theta_size: int, xSpot: float, ySpot: float, zSpot: float, returnField: Literal["E", "B", "H"] = "E") -> np.ndarray:
     """
     Parabolic-mirror incident electric field for pyGDM2
     (Lieb & Meixner, Opt. Express 2001), based on Eqs. (2)–(3)

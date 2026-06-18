@@ -6,7 +6,7 @@ DEFAULT_CENTER_GEOMETRY: bool = True
 DEFAULT_MESH: str = "hex"
 
 SPHERE_GEOMETRY_PARAMS: dict = {"particle_type": "sphere", "step_nm": DEFAULT_STEP_NM, "center": DEFAULT_CENTER_GEOMETRY, "R": 5, "mesh": DEFAULT_MESH}
-ELLIPSOID_GEOMETRY_PARAMS: dict = {"particle_type": "spheroid", "step_nm": DEFAULT_STEP_NM, "center": DEFAULT_CENTER_GEOMETRY, "R1": 8, "R2": 5, "R3": 5, "mesh": DEFAULT_MESH}
+ELLIPSOID_GEOMETRY_PARAMS: dict = {"particle_type": "spheroid", "step_nm": DEFAULT_STEP_NM, "center": DEFAULT_CENTER_GEOMETRY, "R1": 10, "R2": 5, "R3": 6, "mesh": DEFAULT_MESH}
 
 # Material parameters
 DEFAULT_MATERIAL_NAME: str = "sio2"
@@ -27,8 +27,8 @@ DEFAULT_DYADS_PARAMS: dict = {"dyads_name": "DyadsQuasistatic123", "n1": 1.0, "n
 DEFAULT_COM_DISPLACEMENT_NM: float = 1.0
 DEFAULT_LIBRATION_ANGLE_DEG: float = 10.0
 
-DEFAULT_FORCE_DISPLACEMENTS_NM: np.ndarray = np.linspace(-5.0, 5.0, 11)
-DEFAULT_ROTATION_ANGLES_DEG: np.ndarray = np.arange(-10.0, 11.0, 5.0)
+DEFAULT_FORCE_DISPLACEMENTS_NM: np.ndarray = np.arange(-1000.0, 1001.0, 500)
+DEFAULT_ROTATION_ANGLES_DEG: np.ndarray = np.arange(-6.0, 7.0, 3.0)
 
 # Detection parameters
 PLUS_Z_HEMISPHERE_THETA_MAX: float = np.pi / 2.0
