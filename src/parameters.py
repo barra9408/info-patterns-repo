@@ -6,7 +6,7 @@ DEFAULT_CENTER_GEOMETRY: bool = True
 DEFAULT_MESH: str = "hex"
 
 SPHERE_GEOMETRY_PARAMS: dict = {"particle_type": "sphere", "step_nm": DEFAULT_STEP_NM, "center": DEFAULT_CENTER_GEOMETRY, "R": 5, "mesh": DEFAULT_MESH}
-ELLIPSOID_GEOMETRY_PARAMS: dict = {"particle_type": "spheroid", "step_nm": DEFAULT_STEP_NM, "center": DEFAULT_CENTER_GEOMETRY, "R1": 10, "R2": 5, "R3": 6, "mesh": DEFAULT_MESH}
+ELLIPSOID_GEOMETRY_PARAMS: dict = {"particle_type": "spheroid", "step_nm": DEFAULT_STEP_NM, "center": DEFAULT_CENTER_GEOMETRY, "R1": 7, "R2": 5, "R3": 6, "mesh": DEFAULT_MESH}
 
 # Material parameters
 DEFAULT_MATERIAL_NAME: str = "sio2"
