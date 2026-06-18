@@ -34,6 +34,9 @@ DEFAULT_ROTATION_ANGLES_DEG: np.ndarray = np.arange(-10.0, 11.0, 5.0)
 PLUS_Z_HEMISPHERE_THETA_MAX: float = np.pi / 2.0
 
 # Plot parameters
+DEFUALT_USETEX: bool = True
+DEFAULT_FONT_FAMILY: str = "serif"
+DEFAULT_FIGSIZE: tuple[float, float] = (6.5, 4)
 DEFAULT_RESULTS_DIR: str = "results"
 DEFAULT_SAVE_TYPE: str = "pdf"
 DEFAULT_DPI: int = 300

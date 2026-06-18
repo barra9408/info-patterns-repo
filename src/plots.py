@@ -11,6 +11,11 @@ from matplotlib.figure import Figure
 from matplotlib.cm import ScalarMappable
 from matplotlib.colors import Colormap
 
+def set_plot_style(usetex: bool, font_family: str, figsize: tuple[float, float]) -> None:
+    cm.rc("text", usetex=usetex)
+    cm.rc("font", family=font_family)
+    cm.rc("figure", figsize=figsize)
+
 def set_axes_equal(ax: Axes, scale: float) -> None:
     limits = np.array([ax.get_xlim3d(), ax.get_ylim3d(), ax.get_zlim3d()])
     origin = np.mean(limits, axis=1)
