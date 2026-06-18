@@ -6,15 +6,16 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import cm
+import matplotlib as mpl
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 from matplotlib.cm import ScalarMappable
 from matplotlib.colors import Colormap
 
 def set_plot_style(usetex: bool, font_family: str, figsize: tuple[float, float]) -> None:
-    cm.rc("text", usetex=usetex)
-    cm.rc("font", family=font_family)
-    cm.rc("figure", figsize=figsize)
+    mpl.rc("text", usetex=usetex)
+    mpl.rc("font", family=font_family)
+    mpl.rc("figure", figsize=figsize)
 
 def set_axes_equal(ax: Axes, scale: float) -> None:
     limits = np.array([ax.get_xlim3d(), ax.get_ylim3d(), ax.get_zlim3d()])
