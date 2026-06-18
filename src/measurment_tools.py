@@ -4,7 +4,8 @@ import numpy as np
 from pyGDM2 import linear
 from scipy.spatial.transform import Rotation as R
 
-from scr.simulation import simulation_from_geometry
+from src.light_matter_interaction_simulation import simulation_from_geometry
+from src.constants import (HBAR, C, EPS0, NM_TO_M, FORCE_CONVERSION, TORQUE_CONVERSION, AXES)
 
 def max_detection_efficiency(I_pattern: np.ndarray, Nteta: int, Nphi: int, theta_max: float) -> float:
     """
@@ -129,10 +130,7 @@ def force_vs_displacement(geometry: np.ndarray, step_nm: float, material: Any, e
         Each one has shape (len(displacements), 3).
     """
 
-    eps0 = 8.854e-12
-    force_conv = 4 * np.pi * eps0 * 1e-18
-
-    axes = ["X", "Y", "Z"]
+    axes = AXES
     Force = {}
 
     for axis_index, axis_name in enumerate(axes):
@@ -144,7 +142,7 @@ def force_vs_displacement(geometry: np.ndarray, step_nm: float, material: Any, e
             sim = simulation_from_geometry(geometry=shifted_geometry, step_nm=step_nm, material=material, efield=efield, dyads=dyads)
             F = optical_force(sim=sim, field_index=field_index, return_value="force")
             values.append(F)
-        Force[axis_name] = force_conv * np.array(values)
+        Force[axis_name] = FORCE_CONVERSION * np.array(values)
 
     return Force
 
@@ -182,11 +180,7 @@ def torque_vs_rotation(geometry: np.ndarray, step_nm: float, material: Any, efie
         Each one has shape (len(angles_deg), 3).
     """
 
-    eps0 = 8.854e-12
-    force_conv = 4 * np.pi * eps0 * 1e-18
-    torque_conv = force_conv * 1e-9
-
-    axes = ["X", "Y", "Z"]
+    axes = AXES
     Torque = {}
 
     for axis_index, axis_name in enumerate(axes):
@@ -200,7 +194,7 @@ def torque_vs_rotation(geometry: np.ndarray, step_nm: float, material: Any, efie
             sim = simulation_from_geometry(geometry=rotated_geometry, step_nm=step_nm,material=material, efield=efield, dyads=dyads)
             T = optical_force(sim=sim, field_index=field_index, return_value="torque")
             values.append(T)
-        Torque[axis_name] = torque_conv * np.array(values)
+        Torque[axis_name] = TORQUE_CONVERSION * np.array(values)
 
     return Torque
 
@@ -234,12 +228,8 @@ def recoil_force_noise_psd(Escat: np.ndarray, wavelength_nm: float, Nteta: int, 
         Recoil force-noise PSD along the selected mode.
     """
 
-    hbar = 1.054571817e-34
-    c = 299792458.0
-    eps0 = 8.8541878128e-12
-
-    wavelength_m = wavelength_nm * 1e-9
-    omega = 2 * np.pi * c / wavelength_m
+    wavelength_m = wavelength_nm * NM_TO_M
+    omega = 2 * np.pi * C / wavelength_m
 
     theta = np.linspace(0, np.pi, Nteta)
     phi = np.linspace(0, 2 * np.pi, Nphi)
@@ -259,7 +249,7 @@ def recoil_force_noise_psd(Escat: np.ndarray, wavelength_nm: float, Nteta: int, 
     dtheta = theta[1] - theta[0]
     dphi = phi[1] - phi[0]
 
-    S_FF = (hbar * omega * eps0 * c / 2) * np.sum(integrand) * dtheta * dphi
+    S_FF = (HBAR * omega * EPS0 * C / 2) * np.sum(integrand) * dtheta * dphi
 
     return S_FF
 
@@ -287,7 +277,7 @@ def trap_frequency(displacements_nm: np.ndarray, forces_N: np.ndarray, mass: flo
         Trap stiffness in N/m.
     """
 
-    displacements_m = displacements_nm * 1e-9
+    displacements_m = displacements_nm * NM_TO_M
     slope = np.polyfit(displacements_m, forces_N, 1)[0]
     k_trap = -slope
 
@@ -319,7 +309,6 @@ def heating_rate(S_FF: float, mass: float, Omega_mu: float) -> float:
         Recoil heating rate.
     """
 
-    hbar = 1.054571817e-34
-    Gamma_mu = np.pi * S_FF / (mass * hbar * Omega_mu)
+    Gamma_mu = np.pi * S_FF / (mass * HBAR * Omega_mu)
 
     return Gamma_mu

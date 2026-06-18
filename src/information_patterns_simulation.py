@@ -1,5 +1,7 @@
 import numpy as np
 
+from src.constants import HBAR, C, NM_TO_M
+
 def info_patterns_from_scattered_field(dE: np.ndarray, delta_mu: float, wavelength_nm: float, Nteta: int, Nphi: int) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     """
     Compute the information pattern from a scattered-field derivative.
@@ -51,12 +53,9 @@ def info_patterns_from_scattered_field(dE: np.ndarray, delta_mu: float, waveleng
         Contribution from the z-component of the scattered field.
     """
 
-    hbar = 1.054571817e-34
-    c = 299792458.0
-
-    wavelength_m = wavelength_nm * 1e-9
-    omega = 2 * np.pi * c / wavelength_m
-    prefactor = 2 / (hbar * omega * c)
+    wavelength_m = wavelength_nm * NM_TO_M
+    omega = 2 * np.pi * C / wavelength_m
+    prefactor = 2 / (HBAR * omega * C)
 
     dE_dmu = dE / (2 * delta_mu)
 

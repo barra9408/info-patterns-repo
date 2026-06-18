@@ -9,6 +9,8 @@ from pyGDM2 import propagators
 from pyGDM2 import structures
 from scipy.spatial.transform import Rotation as R
 
+from src.constants import (FULL_THETA_MIN, FULL_THETA_MAX, FULL_PHI_MIN, FULL_PHI_MAX)
+
 def incident_field(field_generator: str | Callable[..., Any], wavelengths: Sequence[float], **kwargs: Any) -> Any:
     """
     Generate an incident field using either a default pyGDM field
@@ -164,7 +166,7 @@ def scattered_farfield_from_simulation(geometry: np.ndarray, step_nm: float, mat
     """
 
     sim = simulation_from_geometry(geometry=geometry, step_nm=step_nm, material=material, efield=efield, dyads=dyads)
-    farfield = linear.farfield(sim, field_index=field_index, r_probe=None, r=r, tetamin=0, tetamax=np.pi, Nteta=Nteta, phimin=0, phimax=2 * np.pi, Nphi=Nphi, polarizerangle="none", 
+    farfield = linear.farfield(sim, field_index=field_index, r_probe=None, r=r, tetamin=FULL_PHI_MIN, tetamax=FULL_THETA_MAX, Nteta=Nteta, phimin=FULL_PHI_MIN, phimax=FULL_PHI_MAX, Nphi=Nphi, polarizerangle="none", 
                                return_value="efield", normalization_E0=False)
 
     return farfield
