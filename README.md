@@ -142,34 +142,9 @@ where `I_total` is the full information pattern and `I_x`, `I_y`, `I_z` are the 
 
 ## Methodological pipeline
 
-The repository follows this conceptual workflow:
-
-```text
-Geometry + material
-        │
-        ▼
-Incident field + propagator
-        │
-        ▼
-pyGDM2 scattering simulation
-        │
-        ▼
-Scattered far field
-        │
-        ▼
-Mechanical perturbation ±δμ
-        │
-        ▼
-Field difference dE / dμ
-        │
-        ▼
-Information pattern Iμ(θ, φ)
-        │
-        ├── 2D/3D visualization
-        ├── detection efficiency
-        ├── optical force and torque
-        └── recoil-heating estimates
-```
+<p align="center">
+  <img src="figures/repo_process.svg" alt="Repository conceptual workflow" width="700">
+</p>
 
 This modular structure allows the geometry, material, incident field, propagator, mechanical mode, and detection metric to be changed independently.
 
