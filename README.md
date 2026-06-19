@@ -4,13 +4,12 @@ This repository provides a modular workflow to simulate optical information patt
 
 The main goal is to keep the physical pipeline readable and reusable:
 
-1. build the nanoparticle geometry;
-2. assign material, incident field, and electromagnetic propagator;
-3. solve the scattering problem with `pyGDM2`;
-4. perturb the particle according to a mechanical degree of freedom;
-5. compute the corresponding scattered far-field variation;
-6. transform that variation into an angular information pattern;
-7. analyze visualization, detection, force, torque, and recoil-heating quantities.
+1. Build the nanoparticle geometry.
+2. Assign material, incident field, and electromagnetic propagator.
+3. Perturb the particle according to a mechanical degree of freedom.
+4. Compute the corresponding scattered far-field variation.
+5. Transform that variation into an angular information pattern.
+6. Analyze visualization and specific detection quantities (efficiencies, recoil heating, torque, stiffness, force, etc.).
 
 ---
 
@@ -84,9 +83,9 @@ The repository estimates how much information about a mechanical coordinate $\mu
 
 The coordinate $\mu$ can represent, for example:
 
-- center-of-mass displacement along $x$, $y$ and $z$;
-- libration around a Cartesian axis;
-- any other mechanical or geometrical perturbation that changes the scattered field.
+- Center-of-mass displacement along $x$, $y$ and $z$.
+- Libration around a Cartesian axis.
+- Any other mechanical or geometrical perturbation that changes the scattered field.
 
 Numerically, the particle is evaluated at two nearby configurations:
 
@@ -96,7 +95,7 @@ $$
 \mu_- = \mu_0 - \delta\mu.
 $$
 
-For each configuration, the scattered far field is computed:
+For each configuration, the scattered far field
 
 $$
 \mathbf{E}_{\mathrm{scat}}^{+}(\theta,\phi),
@@ -104,15 +103,15 @@ $$
 \mathbf{E}_{\mathrm{scat}}^{-}(\theta,\phi).
 $$
 
-The field derivative is approximated with a centered finite difference:
+is obtained. Afterwards, we compute the field derivative with a centered finite difference
 
 $$
 \frac{\partial \mathbf{E}_{\mathrm{scat}}}{\partial \mu}
 \approx
-\frac{\mathbf{E}_{\mathrm{scat}}^{+} -\mathbf{E}_{\mathrm{scat}}^{-}}{2\delta\mu}.
+\frac{\mathbf{E}_{\mathrm{scat}}^{+} -\mathbf{E}_{\mathrm{scat}}^{-}}{2\delta\mu},
 $$
 
-The angular information pattern is then computed as:
+so that we obtain the angular information patterns by
 
 $$
 I_\mu(\theta,\phi) =
