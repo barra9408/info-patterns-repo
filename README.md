@@ -103,7 +103,7 @@ $$
 \mathbf{E}_{\mathrm{scat}}^{-}(\theta,\phi).
 $$
 
-is obtained. Afterwards, we compute the field derivative with a centered finite difference
+is obtained. Afterwards, the field derivative is computed with a centered finite difference
 
 $$
 \frac{\partial \mathbf{E}_{\mathrm{scat}}}{\partial \mu}
