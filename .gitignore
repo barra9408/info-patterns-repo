@@ -19,7 +19,6 @@ env/
 # Results / generated files
 results/
 outputs/
-figures/
 
 # Large data / temporary files
 *.npy
