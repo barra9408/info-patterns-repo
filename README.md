@@ -80,33 +80,33 @@ ipykernel
 
 ## Physical idea
 
-The repository estimates how much information about a mechanical coordinate \(\mu\) is encoded in the optical field scattered by a nanoparticle.
+The repository estimates how much information about a mechanical coordinate $\mu$ is encoded in the optical field scattered by a nanoparticle.
 
-The coordinate \(\mu\) can represent, for example:
+The coordinate $\mu$ can represent, for example:
 
-- center-of-mass displacement along \(x\), \(y\), or \(z\);
+- center-of-mass displacement along $x$, $y$ and $z$;
 - libration around a Cartesian axis;
 - any other mechanical or geometrical perturbation that changes the scattered field.
 
 Numerically, the particle is evaluated at two nearby configurations:
 
-\[
+$$
 \mu_+ = \mu_0 + \delta\mu,
 \qquad
 \mu_- = \mu_0 - \delta\mu.
-\]
+$$
 
 For each configuration, the scattered far field is computed:
 
-\[
+$$
 \mathbf{E}_{\mathrm{scat}}^{+}(\theta,\phi),
 \qquad
 \mathbf{E}_{\mathrm{scat}}^{-}(\theta,\phi).
-\]
+$$
 
 The field derivative is approximated with a centered finite difference:
 
-\[
+$$
 \frac{\partial \mathbf{E}_{\mathrm{scat}}}{\partial \mu}
 \approx
 \frac{
@@ -114,18 +114,18 @@ The field derivative is approximated with a centered finite difference:
 -
 \mathbf{E}_{\mathrm{scat}}^{-}
 }{2\delta\mu}.
-\]
+$$
 
 The angular information pattern is then computed as:
 
-\[
+$$
 I_\mu(\theta,\phi)
 =
 \frac{2}{\hbar \omega c}
 \left|
 \frac{\partial \mathbf{E}_{\mathrm{scat}}}{\partial \mu}
 \right|^2.
-\]
+$$
 
 In the code, this is implemented in:
 
