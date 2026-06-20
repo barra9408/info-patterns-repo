@@ -143,11 +143,8 @@ where `I_total` is the full information pattern and `I_x`, `I_y`, `I_z` are the 
 ## Methodological pipeline
 
 <p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="figures/repo_process_dark.svg">
-    <source media="(prefers-color-scheme: light)" srcset="figures/repo_process.svg">
-    <img src="figures/repo_process.svg" alt="Repository conceptual workflow" width="250">
-  </picture>
+  <img src="figures/repo_process.svg#gh-light-mode-only" alt="Repository conceptual workflow" width="250">
+  <img src="figures/repo_process_dark.svg#gh-dark-mode-only" alt="Repository conceptual workflow" width="250">
 </p>
 
 This modular structure allows the geometry, material, incident field, propagator, mechanical mode, and detection metric to be changed independently.
