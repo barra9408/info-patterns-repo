@@ -9,7 +9,7 @@ svg {
 @media (prefers-color-scheme: dark) {
   svg {
     --svg-color-000000: #e6e6e6;
-    --svg-color-000080: #7373b9;
+    --svg-color-000080: #1874cd;
     fill: var(--svg-color-000000, #e6e6e6);
   }
 }
