@@ -5,7 +5,7 @@ import numpy as np
 from pyGDM2 import structures
 from pyGDM2 import materials
 
-from src.constants import MATERIAL_DENSITIES_KG_M3, NM_TO_M
+from info_patterns.constants import MATERIAL_DENSITIES_KG_M3, NM_TO_M
 
 def nanoparticle_geometry(particle_type: str, step_nm: float, center: bool, **kwargs: Any) -> np.ndarray:
     """

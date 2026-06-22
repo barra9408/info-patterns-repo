@@ -1,6 +1,6 @@
 import numpy as np
 
-from src.constants import HBAR, C, NM_TO_M
+from info_patterns.constants import HBAR, C, NM_TO_M
 
 def info_patterns_from_scattered_field(dE: np.ndarray, delta_mu: float, wavelength_nm: float, Nteta: int, Nphi: int) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     """

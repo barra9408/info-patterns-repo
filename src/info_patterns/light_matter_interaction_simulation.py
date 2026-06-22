@@ -9,7 +9,7 @@ from pyGDM2 import propagators
 from pyGDM2 import structures
 from scipy.spatial.transform import Rotation as R
 
-from src.constants import (FULL_THETA_MIN, FULL_THETA_MAX, FULL_PHI_MIN, FULL_PHI_MAX)
+from info_patterns.constants import (FULL_THETA_MIN, FULL_THETA_MAX, FULL_PHI_MIN, FULL_PHI_MAX)
 
 def incident_field(field_generator: str | Callable[..., Any], wavelengths: Sequence[float], **kwargs: Any) -> Any:
     """

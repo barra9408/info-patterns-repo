@@ -4,8 +4,8 @@ import numpy as np
 from pyGDM2 import linear
 from scipy.spatial.transform import Rotation as R
 
-from src.light_matter_interaction_simulation import simulation_from_geometry
-from src.constants import (HBAR, C, EPS0, NM_TO_M, FORCE_CONVERSION, TORQUE_CONVERSION, AXES)
+from info_patterns.light_matter_interaction_simulation import simulation_from_geometry
+from info_patterns.constants import (HBAR, C, EPS0, NM_TO_M, FORCE_CONVERSION, TORQUE_CONVERSION, AXES)
 
 def max_detection_efficiency(I_pattern: np.ndarray, Nteta: int, Nphi: int, theta_max: float) -> float:
     """
