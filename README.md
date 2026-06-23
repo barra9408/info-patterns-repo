@@ -13,7 +13,7 @@ Mechanical degrees of freedom are introduced as small perturbations of the nanop
 $$
 \frac{\partial \mathbf{E}_{\mathrm{far}}}{\partial \mu}
 \approx
-\frac{\mathbf{E}_{\mathrm{far}}^{+}-\mathbf{E}_{\mathrm{far}}^{-}}{2\delta\mu},
+\frac{\mathbf{E}_{\mathrm{far}}^{+}-\mathbf{E}_{\mathrm{far}}^{-}}{2\Delta\mu},
 $$
 
 where $\mu$ denotes the mechanical coordinate of interest. This field derivative is then converted into angular information patterns as
