@@ -217,4 +217,4 @@ Estimates recoil force-noise PSD, trap frequencies, trap stiffness, and recoil-h
 
 ### `08_complete_pipeline.ipynb`
 
-Runs a complete example for an ellipsoidal nanoparticle with a parabolic-mirror incident field. It combines librational and COM information patterns, detection efficiency, optical force and torque curves, and recoil-heating estimates.
+Runs a complete example for an ellipsoidal nanoparticle using pyGDM's HermiteGauss00 Richards-Wolf vector-beam generator with a configurable filling factor and optical-power amplitude scaling. It combines librational and COM information patterns, detection efficiency, optical force and torque curves, and recoil-heating estimates.
