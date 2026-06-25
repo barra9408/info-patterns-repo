@@ -18,7 +18,31 @@ DEFAULT_FARFIELD_PARAMS: dict = {"Nteta": 100, "Nphi": 360, "field_index": 0, "r
 FAST_FARFIELD_PARAMS: dict = {"Nteta": 30, "Nphi": 60, "field_index": 0, "r": 1e5}
 
 # Incident field parameters
+# Richards-Wolf default parameters
+DEFAULT_VECTOR_BEAM_NA: float = 0.8
+DEFAULT_VECTOR_BEAM_F_MM: float = 3.0
+DEFAULT_FILLING_FACTOR: float = 1.0
+DEFAULT_FILLING_FACTORS: list[float] = [0.5, 1.0, 2.0, 3.0]
+DEFAULT_RICHARDS_WOLF_XSPOT_NM: float = 0.0
+DEFAULT_RICHARDS_WOLF_YSPOT_NM: float = 0.0
+DEFAULT_RICHARDS_WOLF_ZSPOT_NM: float = 0.0
+DEFAULT_RICHARDS_WOLF_KSIGN: float = -1.0
+DEFAULT_RICHARDS_WOLF_NORMALIZE: bool = False
+DEFAULT_HERMITE_GAUSS00_FIELD_PARAMS: dict = {"field_generator": "HermiteGauss00", "wavelengths": [DEFAULT_WAVELENGTH_NM], "NA": DEFAULT_VECTOR_BEAM_NA, "f": DEFAULT_VECTOR_BEAM_F_MM, 
+                                              "w0": DEFAULT_FILLING_FACTOR * DEFAULT_VECTOR_BEAM_NA * DEFAULT_VECTOR_BEAM_F_MM, "theta": 0, "xSpot": DEFAULT_RICHARDS_WOLF_XSPOT_NM, 
+                                              "ySpot": DEFAULT_RICHARDS_WOLF_YSPOT_NM, "zSpot": DEFAULT_RICHARDS_WOLF_ZSPOT_NM, "kSign": DEFAULT_RICHARDS_WOLF_KSIGN, 
+                                              "normalize": DEFAULT_RICHARDS_WOLF_NORMALIZE}
+DEFAULT_RADIAL_DOUGHNUT_FIELD_PARAMS: dict = {"field_generator": "Radial_pol_doughnut", "wavelengths": [DEFAULT_WAVELENGTH_NM], "NA": DEFAULT_VECTOR_BEAM_NA,  "f": DEFAULT_VECTOR_BEAM_F_MM, 
+                                              "w0": DEFAULT_FILLING_FACTOR * DEFAULT_VECTOR_BEAM_NA * DEFAULT_VECTOR_BEAM_F_MM, "polarization_direction": 1.0, 
+                                              "xSpot": DEFAULT_RICHARDS_WOLF_XSPOT_NM, "ySpot": DEFAULT_RICHARDS_WOLF_YSPOT_NM, "zSpot": DEFAULT_RICHARDS_WOLF_ZSPOT_NM, 
+                                              "kSign": DEFAULT_RICHARDS_WOLF_KSIGN, "normalize": DEFAULT_RICHARDS_WOLF_NORMALIZE}
+
+# Gaussian parameters
 DEFAULT_GAUSSIAN_FIELD_PARAMS: dict = {"field_generator": "gaussian", "wavelengths": [DEFAULT_WAVELENGTH_NM], "NA": 0.1, "polarization_state": (1, 0, 0, 0)}
+
+# Optical power / field-amplitude parameters
+DEFAULT_OPTICAL_POWER_W: float = 1e-3
+DEFAULT_FREE_SPACE_IMPEDANCE_OHM: float = 377.0
 
 # Propagator parameters
 DEFAULT_DYADS_PARAMS: dict = {"dyads_name": "DyadsQuasistatic123", "n1": 1.0, "n2": 1.0}

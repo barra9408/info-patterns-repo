@@ -11,6 +11,72 @@ from scipy.spatial.transform import Rotation as R
 
 from info_patterns.constants import (FULL_THETA_MIN, FULL_THETA_MAX, FULL_PHI_MIN, FULL_PHI_MAX)
 
+def w0_from_filling_factor(gamma: float, NA: float, f_mm: float) -> float:
+    """
+    Convert a filling factor into the input waist before focusing.
+
+    The convention used for the pyGDM Richards-Wolf vector beam generators is
+
+        gamma = w0 / (NA f)
+
+    where both w0 and f are expressed in mm.
+
+    Parameters
+    ----------
+    gamma : float
+        Filling factor.
+
+    NA : float
+        Numerical aperture.
+
+    f_mm : float
+        Lens focal distance in mm.
+
+    Returns
+    -------
+    w0_mm : float
+        Beam waist before focusing, in mm.
+    """
+
+    w0_mm = gamma * NA * f_mm
+
+    return w0_mm
+
+def hermite_gauss00_power_amplitude_factor(optical_power_W: float, w0_mm: float, impedance_ohm: float) -> float:
+    """
+    Compute the electric-field amplitude factor for pyGDM's HermiteGauss00
+    field when normalize=False.
+
+    The convention used here follows the requested scaling:
+
+        A = sqrt(2 * P * Z0 / (pi * w0))
+
+    where P is the optical power before focusing, Z0 is the free-space
+    impedance, and w0 is the input waist before focusing.
+
+    Parameters
+    ----------
+    optical_power_W : float
+        Optical power before focusing, in W.
+
+    w0_mm : float
+        Beam waist before focusing, in mm.
+
+    impedance_ohm : float
+        Free-space impedance, approximately 377 Ohm.
+
+    Returns
+    -------
+    amplitude : float
+        Multiplicative field-amplitude factor.
+    """
+
+    w0_m = w0_mm * 1e-3
+    amplitude = np.sqrt(2.0 * optical_power_W * impedance_ohm / (np.pi * w0_m))
+
+    return amplitude
+
+
 def incident_field(field_generator: str | Callable[..., Any], wavelengths: Sequence[float], **kwargs: Any) -> Any:
     """
     Generate an incident field using either a default pyGDM field
@@ -166,7 +232,7 @@ def scattered_farfield_from_simulation(geometry: np.ndarray, step_nm: float, mat
     """
 
     sim = simulation_from_geometry(geometry=geometry, step_nm=step_nm, material=material, efield=efield, dyads=dyads)
-    farfield = linear.farfield(sim, field_index=field_index, r_probe=None, r=r, tetamin=FULL_PHI_MIN, tetamax=FULL_THETA_MAX, Nteta=Nteta, phimin=FULL_PHI_MIN, phimax=FULL_PHI_MAX, Nphi=Nphi, polarizerangle="none", 
+    farfield = linear.farfield(sim, field_index=field_index, r_probe=None, r=r, tetamin=FULL_THETA_MIN, tetamax=FULL_THETA_MAX, Nteta=Nteta, phimin=FULL_PHI_MIN, phimax=FULL_PHI_MAX, Nphi=Nphi, polarizerangle="none", 
                                return_value="efield", normalization_E0=False)
 
     return farfield

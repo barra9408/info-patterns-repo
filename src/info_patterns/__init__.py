@@ -12,7 +12,6 @@ from . import light_matter_interaction_simulation
 from . import measurement_tools
 from . import parameters
 from . import plots
-from . import specific_incident_fields
 
 # Import all public objects from each submodule into the package namespace
 from .constants import *
@@ -22,7 +21,6 @@ from .light_matter_interaction_simulation import *
 from .measurement_tools import *
 from .parameters import *
 from .plots import *
-from .specific_incident_fields import *
 
 # Build __all__ automatically from all imported public names
 __all__ = [name for name in globals() if not name.startswith("_")]

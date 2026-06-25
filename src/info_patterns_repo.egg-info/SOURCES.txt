@@ -1,0 +1,15 @@
+README.md
+pyproject.toml
+src/info_patterns/__init__.py
+src/info_patterns/constants.py
+src/info_patterns/generate_nanoparticle.py
+src/info_patterns/information_patterns_simulation.py
+src/info_patterns/light_matter_interaction_simulation.py
+src/info_patterns/measurement_tools.py
+src/info_patterns/parameters.py
+src/info_patterns/plots.py
+src/info_patterns_repo.egg-info/PKG-INFO
+src/info_patterns_repo.egg-info/SOURCES.txt
+src/info_patterns_repo.egg-info/dependency_links.txt
+src/info_patterns_repo.egg-info/requires.txt
+src/info_patterns_repo.egg-info/top_level.txt

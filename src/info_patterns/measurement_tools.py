@@ -198,14 +198,28 @@ def torque_vs_rotation(geometry: np.ndarray, step_nm: float, material: Any, efie
 
     return Torque
 
-def recoil_force_noise_psd(Escat: np.ndarray, wavelength_nm: float, Nteta: int, Nphi: int, mode_axis: int) -> float:
+def recoil_force_noise_psd(
+    E_scat: np.ndarray,
+    wavelength_nm: float,
+    Nteta: int,
+    Nphi: int,
+    r_nm: float,
+    axis_index: int,
+) -> float:
     """
     Compute the recoil force-noise PSD S_FF along a mechanical mode.
 
+    The implemented expression is
+
+        S_FF^(mu) = (hbar * omega * eps0 * r^2 / (2c))
+                   * int |E_scat(theta, phi)|^2
+                         (n_hat · e_mu)^2 dOmega
+
     Parameters
     ----------
-    Escat : np.ndarray
-        Scattered far-field electric field with shape (Nteta * Nphi, 3).
+    E_scat : np.ndarray
+        Scattered far-field electric field with shape (Nteta * Nphi, 3)
+        or (Nteta, Nphi, 3).
 
     wavelength_nm : float
         Optical wavelength in nm.
@@ -216,7 +230,10 @@ def recoil_force_noise_psd(Escat: np.ndarray, wavelength_nm: float, Nteta: int, 
     Nphi : int
         Number of phi points.
 
-    mode_axis : int
+    r_nm : float
+        Far-field evaluation radius in nm.
+
+    axis_index : int
         Mechanical axis:
             0 -> x
             1 -> y
@@ -229,10 +246,12 @@ def recoil_force_noise_psd(Escat: np.ndarray, wavelength_nm: float, Nteta: int, 
     """
 
     wavelength_m = wavelength_nm * NM_TO_M
-    omega = 2 * np.pi * C / wavelength_m
+    r_m = r_nm * NM_TO_M
 
-    theta = np.linspace(0, np.pi, Nteta)
-    phi = np.linspace(0, 2 * np.pi, Nphi)
+    omega = 2.0 * np.pi * C / wavelength_m
+
+    theta = np.linspace(0.0, np.pi, Nteta)
+    phi = np.linspace(0.0, 2.0 * np.pi, Nphi)
     Theta, Phi = np.meshgrid(theta, phi, indexing="ij")
 
     n_x = np.sin(Theta) * np.cos(Phi)
@@ -240,75 +259,104 @@ def recoil_force_noise_psd(Escat: np.ndarray, wavelength_nm: float, Nteta: int, 
     n_z = np.cos(Theta)
 
     n_components = [n_x, n_y, n_z]
-    n_mu = n_components[mode_axis]
+    n_mu = n_components[axis_index]
 
-    Escat_abs2 = np.sum(np.abs(Escat)**2, axis=1).reshape(Nteta, Nphi)
+    E_scat = np.asarray(E_scat)
 
-    integrand = Escat_abs2 * n_mu**2 * np.sin(Theta)
+    if E_scat.ndim == 2:
+        E_scat_abs2 = np.sum(np.abs(E_scat) ** 2, axis=1).reshape(Nteta, Nphi)
 
-    dtheta = theta[1] - theta[0]
-    dphi = phi[1] - phi[0]
+    elif E_scat.ndim == 3:
+        E_scat_abs2 = np.sum(np.abs(E_scat) ** 2, axis=-1)
 
-    S_FF = (HBAR * omega * EPS0 * C / 2) * np.sum(integrand) * dtheta * dphi
+    else:
+        raise ValueError("E_scat must have shape (Nteta*Nphi, 3) or (Nteta, Nphi, 3).")
 
-    return S_FF
+    integrand = E_scat_abs2 * n_mu**2 * np.sin(Theta)
 
-def trap_frequency(displacements_nm: np.ndarray, forces_N: np.ndarray, mass: float) -> tuple[float, float]:
+    integral_theta_phi = np.trapz(
+        np.trapz(integrand, phi, axis=1),
+        theta,
+        axis=0,
+    )
+
+    S_FF = (HBAR * omega * EPS0 * r_m**2 / (2.0 * C)) * integral_theta_phi
+
+    return float(np.real(S_FF))
+
+def trap_frequency(
+    displacements_nm: np.ndarray,
+    force_N: np.ndarray,
+    mass_kg: float,
+) -> tuple[float, float]:
     """
     Compute the harmonic trap frequency from a force-displacement curve.
+
+    The fitted relation is
+
+        F = slope * x + intercept.
+
+    For a stable trap,
+
+        slope < 0
+        k_trap = -slope
+        Omega = sqrt(k_trap / mass)
 
     Parameters
     ----------
     displacements_nm : np.ndarray
         Particle displacements in nm.
 
-    forces_N : np.ndarray
+    force_N : np.ndarray
         Optical force along the same direction in N.
 
-    mass : float
+    mass_kg : float
         Particle mass in kg.
 
     Returns
     -------
-    Omega : float
+    Omega_rad_s : float
         Angular trap frequency in rad/s. Returns np.nan if not restoring.
 
     k_trap : float
         Trap stiffness in N/m.
     """
 
-    displacements_m = displacements_nm * NM_TO_M
-    slope = np.polyfit(displacements_m, forces_N, 1)[0]
-    k_trap = -slope
+    displacements_m = np.asarray(displacements_nm) * NM_TO_M
+    force_N = np.asarray(force_N)
+    slope_N_m = np.polyfit(displacements_m, force_N, 1)[0]
+    k_trap = -slope_N_m
+    Omega_rad_s = np.sqrt(k_trap / mass_kg)
 
-    if k_trap <= 0:
-        return np.nan, k_trap
+    return float(Omega_rad_s), float(k_trap)
 
-    Omega = np.sqrt(k_trap / mass)
-
-    return Omega, k_trap
-
-def heating_rate(S_FF: float, mass: float, Omega_mu: float) -> float:
+def heating_rate(
+    S_FF: float,
+    mass_kg: float,
+    Omega_rad_s: float,
+) -> float:
     """
     Compute the recoil heating rate Gamma_mu.
+
+    Gamma_mu = pi * S_FF / (m * hbar * Omega_mu)
 
     Parameters
     ----------
     S_FF : float
         Recoil force-noise PSD.
 
-    mass : float
+    mass_kg : float
         Particle mass in kg.
 
-    Omega_mu : float
-        Mechanical frequency in rad/s.
+    Omega_rad_s : float
+        Mechanical angular frequency in rad/s.
 
     Returns
     -------
     Gamma_mu : float
-        Recoil heating rate.
+        Recoil heating rate in phonons/s.
     """
 
-    Gamma_mu = np.pi * S_FF / (mass * HBAR * Omega_mu)
+    Gamma_mu = np.pi * S_FF / (mass_kg * HBAR * Omega_rad_s)
 
-    return Gamma_mu
+    return float(Gamma_mu)

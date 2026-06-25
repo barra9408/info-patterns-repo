@@ -59,8 +59,7 @@ info-patterns-repo/
 │       ├── light_matter_interaction_simulation.py
 │       ├── measurement_tools.py
 │       ├── parameters.py
-│       ├── plots.py
-│       └── specific_incident_fields.py
+│       └── plots.py
 │
 ├── .gitignore
 ├── pyproject.toml
@@ -183,10 +182,6 @@ Implements measurement-related quantities derived from the simulated fields, inc
 ### `plots.py`
 
 Contains plotting utilities for 2D and 3D information patterns, force-displacement curves, torque-rotation curves, and related visualization settings.
-
-### `specific_incident_fields.py`
-
-Defines custom incident-field models compatible with [pyGDM](https://homepages.laas.fr/pwiecha/pygdm_doc/#), including focused Gaussian fields based on the Richards-Wolf formalism and a parabolic-mirror field model.
 
 ---
 
