@@ -17,6 +17,9 @@ DEFAULT_WAVELENGTH_NM: float = 1550.0
 DEFAULT_FARFIELD_PARAMS: dict = {"Nteta": 100, "Nphi": 360, "field_index": 0, "r": 1e5}
 FAST_FARFIELD_PARAMS: dict = {"Nteta": 30, "Nphi": 60, "field_index": 0, "r": 1e5}
 
+# Farfield parameters
+DEFAULT_AXES = "all"
+
 # Incident field parameters
 # Richards-Wolf default parameters
 DEFAULT_VECTOR_BEAM_NA: float = 0.8
@@ -56,6 +59,15 @@ DEFAULT_ROTATION_ANGLES_DEG: np.ndarray = np.arange(-6.0, 7.0, 3.0)
 
 # Detection parameters
 PLUS_Z_HEMISPHERE_THETA_MAX: float = np.pi / 2.0
+
+# Parallelization Parameters
+DEFAULT_MEASUREMENT_PARALLEL = "auto"
+DEFAULT_MEASUREMENT_MAX_WORKERS = 5
+DEFAULT_MEASUREMENT_VERBOSE = True
+
+DEFAULT_INFO_PATTERNS_PARALLEL = "auto"
+DEFAULT_INFO_PATTERNS_MAX_WORKERS = 6
+DEFAULT_INFO_PATTERNS_VERBOSE = True
 
 # Plot parameters
 DEFAULT_USETEX: bool = True
