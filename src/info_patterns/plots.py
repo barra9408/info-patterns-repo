@@ -60,8 +60,9 @@ def add_mini_axis(fig: Figure, position: Sequence[float], axis_len: float, elev:
 
     return ax_orient
 
-def plot3d_info_patterns(Nteta: int, Nphi: int, info_patterns: Sequence[np.ndarray], labels: Sequence[str], cmap: Colormap, scale_list: Sequence[float] | None, savefig: bool, 
-                         save_type: str, filename: str, results_dir: str) -> None:
+def plot3d_info_patterns(Nteta: int, Nphi: int, info_patterns: Sequence[np.ndarray], labels: Sequence[str], *,
+                         cmap: Colormap = cm.viridis, scale_list: Sequence[float] | None = None, savefig: bool = False, save_type: str = "pdf", filename: str = "info_patterns_3d", 
+                         results_dir: str = ".") -> None:
     theta = np.linspace(0, np.pi, Nteta)
     phi = np.linspace(0, 2 * np.pi, Nphi)
     Theta, Phi = np.meshgrid(theta, phi, indexing='ij')
@@ -134,8 +135,9 @@ def plot3d_info_patterns(Nteta: int, Nphi: int, info_patterns: Sequence[np.ndarr
 
     plt.show()
 
-def plot2d_info_patterns(Nteta: int, Nphi: int, info_patterns: Sequence[np.ndarray], labels: Sequence[str], planes: Sequence[str], normalize: bool, fill: bool, 
-                         figsize: tuple[float, float] | None, savefig: bool, save_type: str, filename: str, results_dir: str) -> None:
+def plot2d_info_patterns(Nteta: int, Nphi: int, info_patterns: Sequence[np.ndarray], labels: Sequence[str], *,
+                         planes: Sequence[str] = ("xy", "xz", "yz"), normalize: bool = True, fill: bool = True, figsize: tuple[float, float] | None = None, savefig: bool = False, 
+                         save_type: str = "pdf", filename: str = "info_patterns_2d", results_dir: str = ".") -> None:
     theta_grid = np.linspace(0, np.pi, Nteta)
     phi_grid = np.linspace(0, 2 * np.pi, Nphi)
     alpha = np.linspace(0, 2 * np.pi, 720)
@@ -220,7 +222,8 @@ def plot2d_info_patterns(Nteta: int, Nphi: int, info_patterns: Sequence[np.ndarr
     plt.show()
 
 
-def plot_force_displacement(displacements: np.ndarray, Force: dict[str, np.ndarray], savefig: bool, save_type: str, filename: str, results_dir: str) -> tuple[Figure, np.ndarray]:
+def plot_force_displacement(displacements: np.ndarray, Force: dict[str, np.ndarray], *, 
+                            savefig: bool = False, save_type: str = "pdf", filename: str = "force_vs_displacement", results_dir: str = ".") -> tuple[Figure, np.ndarray]:
     components = ["X", "Y", "Z"]
     markers = ["x", "o", "s"]
     colors = [cm.viridis(x) for x in [0.1, 0.5, 0.9]]
@@ -247,7 +250,8 @@ def plot_force_displacement(displacements: np.ndarray, Force: dict[str, np.ndarr
 
     return fig, axs
 
-def plot_torque_rotation(angles_deg: np.ndarray, Torque: dict[str, np.ndarray], savefig: bool, save_type: str, filename: str, results_dir: str) -> tuple[Figure, np.ndarray]:
+def plot_torque_rotation(angles_deg: np.ndarray, Torque: dict[str, np.ndarray], *,
+                         savefig: bool = False, save_type: str = "pdf", filename: str = "torque_vs_rotation", results_dir: str = ".") -> tuple[Figure, np.ndarray]:
     components = ["X", "Y", "Z"]
     markers = ["x", "o", "s"]
     colors = [cm.viridis(x) for x in [0.1, 0.5, 0.9]]

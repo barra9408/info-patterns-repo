@@ -166,9 +166,9 @@ def _force_vs_displacement_worker(geometry: np.ndarray, step_nm: float, material
 
     return axis_index, displacement_indices, FORCE_CONVERSION * np.array(values)
 
-def force_vs_displacement(geometry: np.ndarray, step_nm: float, material: Any, efield: Any, dyads: Any, displacements: np.ndarray, field_index: int, parallel: bool | str, 
-                          max_workers: int | None, material_name: str | None, material_kwargs: dict[str, Any] | None, efield_params: dict[str, Any] | None, 
-                          dyads_params: dict[str, Any] | None, verbose: bool) -> dict[str, np.ndarray]:
+def force_vs_displacement(geometry: np.ndarray, step_nm: float, material: Any, efield: Any, dyads: Any, displacements: np.ndarray, field_index: int, *, 
+                          parallel: bool | Literal["auto"] = False, max_workers: int | None = None, material_name: str | None = None, material_kwargs: dict[str, Any] | None = None, 
+                          efield_params: dict[str, Any] | None = None, dyads_params: dict[str, Any] | None = None, verbose: bool = False) -> dict[str, np.ndarray]:
     """
     Compute optical force as a function of COM displacement.
 
@@ -195,30 +195,31 @@ def force_vs_displacement(geometry: np.ndarray, step_nm: float, material: Any, e
     field_index : int
         Incident-field configuration index.
 
-    parallel : bool | str
+    parallel : bool | str, optional
         Execution mode. Accepted values are False, True, and "auto".
+        Default is False.
 
-    max_workers : int | None
-        Maximum number of worker processes.
+    max_workers : int | None, optional
+        Maximum number of worker processes. Default is None.
 
-    material_name : str | None
+    material_name : str | None, optional
         Material name used to reconstruct the material inside each process.
-        Required when parallel execution is used.
+        Required when parallel execution is used. Default is None.
 
-    material_kwargs : dict[str, Any] | None
+    material_kwargs : dict[str, Any] | None, optional
         Keyword arguments for nanoparticle_material.
-        Required when parallel execution is used.
+        Required when parallel execution is used. Default is None.
 
-    efield_params : dict[str, Any] | None
+    efield_params : dict[str, Any] | None, optional
         Keyword arguments for incident_field.
-        Required when parallel execution is used.
+        Required when parallel execution is used. Default is None.
 
-    dyads_params : dict[str, Any] | None
+    dyads_params : dict[str, Any] | None, optional
         Keyword arguments for field_propagation.
-        Required when parallel execution is used.
+        Required when parallel execution is used. Default is None.
 
-    verbose : bool
-        If True, print execution-mode messages.
+    verbose : bool, optional
+        If True, print execution-mode messages. Default is None.
 
     Returns
     -------
@@ -306,9 +307,9 @@ def _torque_vs_rotation_worker(geometry: np.ndarray, step_nm: float, material_na
 
     return axis_index, angle_indices, TORQUE_CONVERSION * np.array(values)
 
-def torque_vs_rotation(geometry: np.ndarray, step_nm: float, material: Any, efield: Any, dyads: Any, angles_deg: np.ndarray, field_index: int, parallel: bool | str, max_workers: int | None, 
-                       material_name: str | None, material_kwargs: dict[str, Any] | None, efield_params: dict[str, Any] | None, dyads_params: dict[str, Any] | None, 
-                       verbose: bool) -> dict[str, np.ndarray]:
+def torque_vs_rotation(geometry: np.ndarray, step_nm: float, material: Any, efield: Any, dyads: Any, angles_deg: np.ndarray, field_index: int, *, 
+                        parallel: bool | Literal["auto"] = False, max_workers: int | None = None, material_name: str | None = None, material_kwargs: dict[str, Any] | None = None, 
+                        efield_params: dict[str, Any] | None = None, dyads_params: dict[str, Any] | None = None, verbose: bool = False) -> dict[str, np.ndarray]:
     """
     Compute optical torque as a function of angular displacement.
 
@@ -335,30 +336,31 @@ def torque_vs_rotation(geometry: np.ndarray, step_nm: float, material: Any, efie
     field_index : int
         Incident-field configuration index.
 
-    parallel : bool | str
+    parallel : bool | str, optional
         Execution mode. Accepted values are False, True, and "auto".
+        Default is False.
 
-    max_workers : int | None
-        Maximum number of worker processes.
+    max_workers : int | None, optional
+        Maximum number of worker processes. Default is None.
 
-    material_name : str | None
+    material_name : str | None, optional
         Material name used to reconstruct the material inside each process.
-        Required when parallel execution is used.
+        Required when parallel execution is used. Default is None.
 
-    material_kwargs : dict[str, Any] | None
+    material_kwargs : dict[str, Any] | None, optional
         Keyword arguments for nanoparticle_material.
-        Required when parallel execution is used.
+        Required when parallel execution is used. Default is None.
 
-    efield_params : dict[str, Any] | None
+    efield_params : dict[str, Any] | None, optional
         Keyword arguments for incident_field.
-        Required when parallel execution is used.
+        Required when parallel execution is used. Default is None.
 
-    dyads_params : dict[str, Any] | None
+    dyads_params : dict[str, Any] | None, optional
         Keyword arguments for field_propagation.
-        Required when parallel execution is used.
+        Required when parallel execution is used. Default is None.
 
-    verbose : bool
-        If True, print execution-mode messages.
+    verbose : bool, optional
+        If True, print execution-mode messages. Default is None.
 
     Returns
     -------
@@ -423,3 +425,141 @@ def torque_vs_rotation(geometry: np.ndarray, step_nm: float, material: Any, efie
             Torque[axis_name][angle_indices, :] = torque_values
 
     return Torque
+
+def recoil_force_noise_psd(E_scat: np.ndarray, wavelength_nm: float, Nteta: int, Nphi: int, r_nm: float, axis_index: int) -> float:
+    """
+    Compute the recoil force-noise PSD S_FF along a mechanical mode.
+
+    The implemented expression is
+
+        S_FF^(mu) = (hbar * omega * eps0 * r^2 / (2c))
+                   * int |E_scat(theta, phi)|^2
+                         (n_hat · e_mu)^2 dOmega
+
+    Parameters
+    ----------
+    E_scat : np.ndarray
+        Scattered far-field electric field with shape (Nteta * Nphi, 3)
+        or (Nteta, Nphi, 3).
+
+    wavelength_nm : float
+        Optical wavelength in nm.
+
+    Nteta : int
+        Number of theta points.
+
+    Nphi : int
+        Number of phi points.
+
+    r_nm : float
+        Far-field evaluation radius in nm.
+
+    axis_index : int
+        Mechanical axis:
+            0 -> x
+            1 -> y
+            2 -> z
+
+    Returns
+    -------
+    S_FF : float
+        Recoil force-noise PSD along the selected mode.
+    """
+
+    wavelength_m = wavelength_nm * NM_TO_M
+    r_m = r_nm * NM_TO_M
+
+    omega = 2.0 * np.pi * C / wavelength_m
+
+    theta = np.linspace(0.0, np.pi, Nteta)
+    phi = np.linspace(0.0, 2.0 * np.pi, Nphi)
+    Theta, Phi = np.meshgrid(theta, phi, indexing="ij")
+
+    n_x = np.sin(Theta) * np.cos(Phi)
+    n_y = np.sin(Theta) * np.sin(Phi)
+    n_z = np.cos(Theta)
+    n_components = [n_x, n_y, n_z]
+    n_mu = n_components[axis_index]
+
+    E_scat = np.asarray(E_scat)
+    if E_scat.ndim == 2:
+        E_scat_abs2 = np.sum(np.abs(E_scat) ** 2, axis=1).reshape(Nteta, Nphi)
+    elif E_scat.ndim == 3:
+        E_scat_abs2 = np.sum(np.abs(E_scat) ** 2, axis=-1)
+    else:
+        raise ValueError("E_scat must have shape (Nteta*Nphi, 3) or (Nteta, Nphi, 3).")
+
+    integrand = E_scat_abs2 * n_mu**2 * np.sin(Theta)
+    integral_theta_phi = np.trapz(np.trapz(integrand, phi, axis=1), theta, axis=0)
+    S_FF = (HBAR * omega * EPS0 * r_m**2 / (2.0 * C)) * integral_theta_phi
+
+    return float(np.real(S_FF))
+
+def trap_frequency(displacements_nm: np.ndarray, force_N: np.ndarray, mass_kg: float) -> tuple[float, float]:
+    """
+    Compute the harmonic trap frequency from a force-displacement curve.
+
+    The fitted relation is
+
+        F = slope * x + intercept.
+
+    For a stable trap,
+
+        slope < 0
+        k_trap = -slope
+        Omega = sqrt(k_trap / mass)
+
+    Parameters
+    ----------
+    displacements_nm : np.ndarray
+        Particle displacements in nm.
+
+    force_N : np.ndarray
+        Optical force along the same direction in N.
+
+    mass_kg : float
+        Particle mass in kg.
+
+    Returns
+    -------
+    Omega_rad_s : float
+        Angular trap frequency in rad/s. Returns np.nan if not restoring.
+
+    k_trap : float
+        Trap stiffness in N/m.
+    """
+
+    displacements_m = np.asarray(displacements_nm) * NM_TO_M
+    force_N = np.asarray(force_N)
+    slope_N_m = np.polyfit(displacements_m, force_N, 1)[0]
+    k_trap = -slope_N_m
+    Omega_rad_s = np.sqrt(k_trap / mass_kg)
+
+    return float(Omega_rad_s), float(k_trap)
+
+def heating_rate(S_FF: float, mass_kg: float, Omega_rad_s: float) -> float:
+    """
+    Compute the recoil heating rate Gamma_mu.
+
+    Gamma_mu = pi * S_FF / (m * hbar * Omega_mu)
+
+    Parameters
+    ----------
+    S_FF : float
+        Recoil force-noise PSD.
+
+    mass_kg : float
+        Particle mass in kg.
+
+    Omega_rad_s : float
+        Mechanical angular frequency in rad/s.
+
+    Returns
+    -------
+    Gamma_mu : float
+        Recoil heating rate in phonons/s.
+    """
+
+    Gamma_mu = np.pi * S_FF / (mass_kg * HBAR * Omega_rad_s)
+
+    return float(Gamma_mu)

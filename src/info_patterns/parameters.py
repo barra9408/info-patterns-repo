@@ -73,13 +73,3 @@ DEFAULT_INFO_PATTERNS_VERBOSE = True
 DEFAULT_USETEX: bool = True
 DEFAULT_FONT_FAMILY: str = "serif"
 DEFAULT_FIGSIZE: tuple[float, float] = (6.5, 4)
-DEFAULT_RESULTS_DIR: str = "results"
-DEFAULT_SAVE_TYPE: str = "pdf"
-DEFAULT_DPI: int = 300
-
-DEFAULT_3D_SCALE: float = 0.47
-DEFAULT_MINI_AXIS_POSITION: list[float] = [0.855, 0.25, 0.12, 0.20]
-
-DEFAULT_2D_PLANES: tuple[str, str, str] = ("xy", "xz", "yz")
-DEFAULT_2D_NORMALIZE: bool = True
-DEFAULT_2D_FILL: bool = True
