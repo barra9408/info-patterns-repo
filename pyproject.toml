@@ -8,6 +8,10 @@ version = "0.1.0"
 description = "Optical information-pattern simulations for nanoparticles."
 readme = "README.md"
 requires-python = ">=3.11"
+authors = [
+    { name = "Sebastián Gutiérrez Bernal" },
+    { name = "Joanna Ada Zielinska" }
+]
 dependencies = [
     "numpy",
     "scipy",

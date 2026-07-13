@@ -1,4 +1,14 @@
-# Information Patterns Repository
+<h1 align="center">Information Patterns Repository</h1>
+
+<p align="center">
+  <strong>Sebastián Gutiérrez Bernal<sup>1</sup></strong>,
+  <strong>Joanna Ada Zielinska<sup>2</sup></strong><br><br>
+
+  <small>
+    <sup>1</sup> School of Engineering and Sciences, Tecnológico de Monterrey, Mexico<br>
+    <sup>2</sup> School of Physics and Astronomy, University of Southampton, UK
+  </small>
+</p>
 
 This repository provides a framework for simulating optical information patterns associated with the mechanical degrees of freedom of nanoparticles. The overall procedure is summarized in the diagram below.
 

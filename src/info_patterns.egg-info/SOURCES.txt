@@ -6,6 +6,7 @@ src/info_patterns/generate_nanoparticle.py
 src/info_patterns/information_patterns_simulation.py
 src/info_patterns/light_matter_interaction_simulation.py
 src/info_patterns/measurement_tools.py
+src/info_patterns/parallel_utils.py
 src/info_patterns/parameters.py
 src/info_patterns/plots.py
 src/info_patterns.egg-info/PKG-INFO

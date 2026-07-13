@@ -70,7 +70,8 @@ info-patterns-repo/
 │       ├── information_patterns_simulation.py
 │       ├── light_matter_interaction_simulation.py
 │       ├── measurement_tools.py
-│       ├── parameters.py
+│       ├── parallel_utils.py
+│       ├── parameters.py        
 │       └── plots.py
 │
 ├── .gitignore
@@ -174,6 +175,10 @@ Defines shared physical constants, unit conversions, coordinate conventions, mat
 ### `parameters.py`
 
 Stores default parameters for common simulation cases, including nanoparticle geometry, material choice, optical sampling, incident fields, propagators, mechanical perturbations, detection regions, and plotting settings.
+
+### `parallel_utils.py`
+
+Provides shared utilities for selecting serial, parallel, or automatic execution, resolving the number of worker processes, and limiting BLAS/OpenMP numerical kernels to one thread per worker to reduce CPU oversubscription.
 
 ### `generate_nanoparticle.py`
 
