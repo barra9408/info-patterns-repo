@@ -225,13 +225,12 @@ def plot2d_info_patterns(Nteta: int, Nphi: int, info_patterns: Sequence[np.ndarr
 def plot_force_displacement(displacements: np.ndarray, Force: dict[str, np.ndarray], *, 
                             savefig: bool = False, save_type: str = "pdf", filename: str = "force_vs_displacement", results_dir: str = ".") -> tuple[Figure, np.ndarray]:
     components = ["X", "Y", "Z"]
-    markers = ["x", "o", "s"]
     colors = [cm.viridis(x) for x in [0.1, 0.5, 0.9]]
 
     fig, axs = plt.subplots(1, 3, figsize=(12, 3.8), dpi=300)
     for j, axis in enumerate(components):
         for i, comp in enumerate(components):
-            axs[j].plot(displacements, Force[axis][:, i], marker=markers[i], color=colors[i], label=fr"$F_{comp}$")
+            axs[j].plot(displacements, Force[axis][:, i], color=colors[i], label=fr"$F_{comp}$")
         axs[j].set_title(fr"Displacement along ${axis.lower()}$")
         axs[j].set_xlabel(r"Displacement [nm]")
         axs[j].set_ylabel(r"Force [N]")
@@ -253,13 +252,12 @@ def plot_force_displacement(displacements: np.ndarray, Force: dict[str, np.ndarr
 def plot_torque_rotation(angles_deg: np.ndarray, Torque: dict[str, np.ndarray], *,
                          savefig: bool = False, save_type: str = "pdf", filename: str = "torque_vs_rotation", results_dir: str = ".") -> tuple[Figure, np.ndarray]:
     components = ["X", "Y", "Z"]
-    markers = ["x", "o", "s"]
     colors = [cm.viridis(x) for x in [0.1, 0.5, 0.9]]
     
     fig, axs = plt.subplots(1, 3, figsize=(12, 3.8), dpi=300)
     for j, axis in enumerate(components):
         for i, comp in enumerate(components):
-            axs[j].plot(angles_deg, Torque[axis][:, i], marker=markers[i], color=colors[i], label=fr"$\tau_{comp}$")
+            axs[j].plot(angles_deg, Torque[axis][:, i], color=colors[i], label=fr"$\tau_{comp}$")
         axs[j].set_title(fr"Rotation around ${axis.lower()}$")
         axs[j].set_xlabel(r"Angle [deg]")
         axs[j].set_ylabel(r"Torque [N m]")
