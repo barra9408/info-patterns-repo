@@ -11,19 +11,19 @@ from scipy.spatial.transform import Rotation as R
 
 from info_patterns.constants import (FULL_THETA_MIN, FULL_THETA_MAX, FULL_PHI_MIN, FULL_PHI_MAX)
 
-def w0_from_filling_factor(gamma: float, NA: float, f_mm: float) -> float:
+def w0_from_filling_factor(f0: float, NA: float, f_mm: float) -> float:
     """
     Convert a filling factor into the input waist before focusing.
 
-    The convention used for the pyGDM Richards-Wolf vector beam generators is
+    The convention used is
 
-        gamma = w0 / (NA f)
+        f0 = NA f / w0
 
     where both w0 and f are expressed in mm.
 
     Parameters
     ----------
-    gamma : float
+    f0 : float
         Filling factor.
 
     NA : float
@@ -38,7 +38,7 @@ def w0_from_filling_factor(gamma: float, NA: float, f_mm: float) -> float:
         Beam waist before focusing, in mm.
     """
 
-    w0_mm = gamma * NA * f_mm
+    w0_mm = NA * f_mm / f0
 
     return w0_mm
 
@@ -72,9 +72,44 @@ def hermite_gauss00_power_amplitude_factor(optical_power_W: float, w0_mm: float,
     """
 
     w0_m = w0_mm * 1e-3
-    amplitude = np.sqrt(2.0 * optical_power_W * impedance_ohm / (np.pi * w0_m))
+    amplitude_V_m = np.sqrt(4.0 * optical_power_W * impedance_ohm / (np.pi * w0_m**2))
 
-    return amplitude
+    return amplitude_V_m
+
+def radial_doughnut_power_amplitude_factor(optical_power_W: float, w0_mm: float, impedance_ohm: float) -> float:
+    """
+    Compute the electric-field amplitude of a radially polarized doughnut
+    beam with a specified optical power before focusing.
+
+    The pupil-plane field is
+
+        E(rho) = A (rho / w0) exp(-rho**2 / w0**2),
+
+    where
+
+        A = sqrt(8 P Z / (pi w0**2)).
+
+    Parameters
+    ----------
+    optical_power_W : float
+        Optical power before focusing, in W.
+
+    w0_mm : float
+        Beam waist before focusing, in mm.
+
+    impedance_ohm : float
+        Wave impedance of the incident medium, in ohms.
+
+    Returns
+    -------
+    amplitude_V_m : float
+        Electric-field amplitude, in V/m.
+    """
+
+    w0_m = w0_mm * 1e-3
+    amplitude_V_m = np.sqrt(8.0 * optical_power_W * impedance_ohm / (np.pi * w0_m**2))
+
+    return amplitude_V_m
 
 
 def incident_field(field_generator: str | Callable[..., Any], wavelengths: Sequence[float], **kwargs: Any) -> Any:
