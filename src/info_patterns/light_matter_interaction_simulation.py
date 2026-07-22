@@ -78,36 +78,36 @@ def hermite_gauss00_power_amplitude_factor(optical_power_W: float, w0_mm: float,
 
 def radial_doughnut_power_amplitude_factor(optical_power_W: float, w0_mm: float, impedance_ohm: float) -> float:
     """
-    Compute the electric-field amplitude of a radially polarized doughnut
-    beam with a specified optical power before focusing.
+    Compute the amplitude coefficient of a radially polarized doughnut
+    beam from its total incident power.
 
-    The pupil-plane field is
+    The pyGDM radial mode is equivalent to
 
-        E(rho) = A (rho / w0) exp(-rho**2 / w0**2),
+        HG10 x_hat + HG01 y_hat,
 
-    where
+    with pupil-plane field magnitude
 
-        A = sqrt(8 P Z / (pi w0**2)).
+        E(rho) = A (2 rho / w0) exp(-rho**2 / w0**2).
 
     Parameters
     ----------
     optical_power_W : float
-        Optical power before focusing, in W.
+        Total incident optical power in watts.
 
     w0_mm : float
-        Beam waist before focusing, in mm.
+        Input beam waist before focusing, in mm.
 
     impedance_ohm : float
-        Wave impedance of the incident medium, in ohms.
+        Optical impedance of the incident medium, in ohms.
 
     Returns
     -------
     amplitude_V_m : float
-        Electric-field amplitude, in V/m.
+        Electric-field amplitude coefficient, in V/m.
     """
 
     w0_m = w0_mm * 1e-3
-    amplitude_V_m = np.sqrt(8.0 * optical_power_W * impedance_ohm / (np.pi * w0_m**2))
+    amplitude_V_m = np.sqrt(2.0 * optical_power_W * impedance_ohm / (np.pi * w0_m**2))
 
     return amplitude_V_m
 
