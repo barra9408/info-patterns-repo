@@ -85,7 +85,7 @@ def optical_force(sim: Any, field_index: int, return_value: Literal["force", "to
     alpha_tensor = sim.dyads.getPolarizabilityTensor(sim.E[field_index][0]["wavelength"], sim.struct)
     P = np.matmul(alpha_tensor, Eint[..., None])[..., 0]
 
-    gradE = linear.field_gradient(sim, field_index)
+    gradE = linear.field_gradient(sim, field_index, which_fields=["E0"])
     dEdx = gradE[0][..., 3:]
     dEdy = gradE[1][..., 3:]
     dEdz = gradE[2][..., 3:]
