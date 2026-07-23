@@ -541,7 +541,7 @@ def heating_rate(S_FF: float, mass_kg: float, Omega_rad_s: float) -> float:
     """
     Compute the recoil heating rate Gamma_mu.
 
-    Gamma_mu = pi * S_FF / (m * hbar * Omega_mu)
+    Gamma_mu = S_FF / (2 * m * hbar * Omega_mu)
 
     Parameters
     ----------
