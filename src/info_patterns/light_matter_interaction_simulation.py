@@ -155,6 +155,57 @@ def incident_field(field_generator: str | Callable[..., Any], wavelengths: Seque
     
     return efield
 
+def evaluate_incident_field(field_generator: str | Callable[..., Any], positions_nm: np.ndarray, wavelength_nm: float, env_dict: dict[str, Any], **kwargs: Any) -> np.ndarray:
+    """
+    Evaluate an incident electric field at arbitrary spatial positions.
+
+    This function calls a pyGDM field generator directly, without creating
+    a particle structure or solving a light-matter scattering problem.
+
+    Parameters
+    ----------
+    field_generator : str | Callable[..., Any]
+        Name of a field function inside ``pyGDM2.fields`` or a user-defined
+        field function compatible with pyGDM.
+
+    positions_nm : np.ndarray
+        Cartesian positions where the field is evaluated, in nm.
+        Shape must be ``(N, 3)``.
+
+    wavelength_nm : float
+        Optical wavelength in nm.
+
+    env_dict : dict[str, Any]
+        Environment dictionary compatible with the selected pyGDM field
+        generator.
+
+    **kwargs : Any
+        Additional arguments required by the field generator.
+
+    Returns
+    -------
+    field_values : np.ndarray
+        Complex electric-field vectors evaluated at the requested positions.
+        Shape is ``(N, 3)``.
+    """
+
+    positions_nm = np.asarray(positions_nm, dtype=float)
+
+    if positions_nm.ndim != 2 or positions_nm.shape[1] != 3:
+        raise ValueError("positions_nm must have shape (N, 3).")
+
+    if isinstance(field_generator, str):
+        if not hasattr(fields, field_generator):
+            raise ValueError(f"Field '{field_generator}' does not exist in pyGDM2.fields.")
+
+        field_function = getattr(fields, field_generator)
+    else:
+        field_function = field_generator
+
+    field_values = field_function(pos=positions_nm, env_dict=env_dict, wavelength=wavelength_nm, **kwargs)
+
+    return np.asarray(field_values)
+
 def field_propagation(dyads_name: str, **kwargs: Any) -> Any:
     """
     Generate the electromagnetic propagator used by pyGDM2.
