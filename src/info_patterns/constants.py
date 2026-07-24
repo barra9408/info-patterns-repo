@@ -4,6 +4,7 @@ import numpy as np
 HBAR: float = 1.054571817e-34
 C: float = 299792458.0
 EPS0: float = 8.8541878128e-12
+KB: float = 1.380649e-23
 
 # Unit conversions
 NM_TO_M: float = 1e-9
