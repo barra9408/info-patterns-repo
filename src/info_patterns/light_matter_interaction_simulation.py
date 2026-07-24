@@ -38,7 +38,7 @@ def w0_from_filling_factor(f0: float, NA: float, f_mm: float) -> float:
         Beam waist before focusing, in mm.
     """
 
-    w0_mm = NA * f_mm / f0
+    w0_mm = NA * f_mm * f0
 
     return w0_mm
 
