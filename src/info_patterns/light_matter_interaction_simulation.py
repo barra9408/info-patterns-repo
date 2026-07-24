@@ -17,7 +17,7 @@ def w0_from_filling_factor(f0: float, NA: float, f_mm: float) -> float:
 
     The convention used is
 
-        f0 = NA f / w0
+        f0 = w0 / NA f 
 
     where both w0 and f are expressed in mm.
 
