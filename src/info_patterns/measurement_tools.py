@@ -94,8 +94,8 @@ def optical_force(sim: Any, field_index: int, return_value: Literal["force", "to
 
 def maxwell_stress_tensor(total_electric_field: np.ndarray, total_magnetic_field: np.ndarray, permittivity: float = EPS0, permeability: float = MU0) -> np.ndarray:
     electric_term = permittivity * np.einsum("...i,...j->...ij", total_electric_field, np.conj(total_electric_field))
-    magnetic_term = permeability * np.einsum("...i,...j->...ij", total_magnetic_field, np.conj(total_magnetic_field))
-    mixed_term =  permittivity * np.sum(np.abs(total_electric_field)**2, axis=-1) + permeability * np.sum(np.abs(total_magnetic_field)**2, axis=-1)
+    magnetic_term = (1.0 / permeability) * np.einsum("...i,...j->...ij", total_magnetic_field, np.conj(total_magnetic_field))
+    mixed_term = permittivity * np.sum(np.abs(total_electric_field)**2, axis=-1) + (1.0 / permeability) * np.sum(np.abs(total_magnetic_field)**2, axis=-1)
     return 0.5 * np.real(electric_term + magnetic_term - 0.5 * mixed_term[..., None, None] * np.eye(3))
 
 def spherical_integration_surface(radius: float, n_theta: int, n_phi: int, center: np.ndarray = np.zeros(3)):
