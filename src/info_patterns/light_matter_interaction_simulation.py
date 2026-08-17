@@ -9,7 +9,7 @@ from pyGDM2 import propagators
 from pyGDM2 import structures
 from scipy.spatial.transform import Rotation as R
 
-from info_patterns.constants import (FULL_THETA_MIN, FULL_THETA_MAX, FULL_PHI_MIN, FULL_PHI_MAX)
+from info_patterns.constants import (EPS0, FULL_THETA_MIN, FULL_THETA_MAX, FULL_PHI_MIN, FULL_PHI_MAX, MU0)
 
 def w0_from_filling_factor(f0: float, NA: float, f_mm: float) -> float:
     """
@@ -323,9 +323,22 @@ def scattered_farfield_from_simulation(geometry: np.ndarray, step_nm: float, mat
 
     return farfield
 
-def total_fields_from_simulation(sim: Any, positions_nm: np.ndarray, field_index: int) -> tuple[np.ndarray, np.ndarray]:
-    total_electric_field, total_magnetic_field = linear.nearfield(sim, field_index=field_index, r_probe=positions_nm, which_fields=["Et", "Bt"])
-    return total_electric_field[:, 3:], total_magnetic_field[:, 3:]
+def total_fields_from_simulation(sim: Any, positions_nm: np.ndarray, field_index: int) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    scattered_electric_data, scattered_magnetic_data, incident_electric_data, incident_magnetic_data = linear.nearfield(sim, field_index=field_index, r_probe=positions_nm, which_fields=["Es", "Hs", "E0", "H0"])
+
+    scattered_electric_field = scattered_electric_data[:, 3:]
+    scattered_magnetic_field = scattered_magnetic_data[:, 3:]
+    incident_electric_field = incident_electric_data[:, 3:]
+    incident_magnetic_field = incident_magnetic_data[:, 3:]
+
+    vacuum_impedance = np.sqrt(MU0 / EPS0)
+    incident_magnetic_field = -incident_magnetic_field
+    scattered_magnetic_field = scattered_magnetic_field / vacuum_impedance
+
+    total_electric_field = incident_electric_field + scattered_electric_field
+    total_magnetic_field = incident_magnetic_field + scattered_magnetic_field
+
+    return total_electric_field, total_magnetic_field, incident_electric_field, incident_magnetic_field
 
 def com_scattered_farfield(geometry: np.ndarray, step_nm: float, material: Any, efield: Any, dyads: Any, axis_index: int, disp_nm: float, Nteta: int, Nphi: int, field_index: int, r: float
                            ) -> tuple[tuple[Any, ...], tuple[Any, ...], np.ndarray]:

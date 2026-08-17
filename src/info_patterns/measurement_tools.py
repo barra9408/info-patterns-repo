@@ -107,20 +107,27 @@ def spherical_integration_surface(radius: float, n_theta: int, n_phi: int, cente
     area_elements = (radius**2 * np.sin(theta_grid) * (np.pi / n_theta) * (2 * np.pi / n_phi)).reshape(-1)
     return surface_points, normal_vectors, area_elements
 
-def force_from_stress_tensor(total_electric_field: np.ndarray, total_magnetic_field: np.ndarray, radius: float, n_theta: int, n_phi: int) -> np.ndarray:
+def force_from_stress_tensor(total_electric_field: np.ndarray, total_magnetic_field: np.ndarray, incident_electric_field: np.ndarray, incident_magnetic_field: np.ndarray, radius: float, n_theta: int, n_phi: int) -> np.ndarray:
     _, normal_vectors, area_elements = spherical_integration_surface(radius=radius, n_theta=n_theta, n_phi=n_phi)
-    stress_tensor = maxwell_stress_tensor(total_electric_field=total_electric_field, total_magnetic_field=total_magnetic_field)
-    traction = np.einsum("nij,nj->ni", stress_tensor, normal_vectors)
-    return np.sum(traction * area_elements[:, None], axis=0)
+    total_stress_tensor = maxwell_stress_tensor(total_electric_field=total_electric_field, total_magnetic_field=total_magnetic_field)
+    incident_stress_tensor = maxwell_stress_tensor(total_electric_field=incident_electric_field, total_magnetic_field=incident_magnetic_field)
+    interaction_stress_tensor = total_stress_tensor - incident_stress_tensor
+    traction = np.einsum("nij,nj->ni", interaction_stress_tensor, normal_vectors)
+    force = np.sum(traction * area_elements[:, None], axis=0)
 
+    return force
 
-def torque_from_stress_tensor(total_electric_field: np.ndarray, total_magnetic_field: np.ndarray, radius: float, n_theta: int, n_phi: int, center: np.ndarray = np.zeros(3)) -> np.ndarray:
+def torque_from_stress_tensor(total_electric_field: np.ndarray, total_magnetic_field: np.ndarray, incident_electric_field: np.ndarray, incident_magnetic_field: np.ndarray, radius: float, n_theta: int, n_phi: int, center: np.ndarray = np.zeros(3)) -> np.ndarray:    
     surface_points, normal_vectors, area_elements = spherical_integration_surface(radius=radius, n_theta=n_theta, n_phi=n_phi, center=center)
-    stress_tensor = maxwell_stress_tensor(total_electric_field=total_electric_field, total_magnetic_field=total_magnetic_field)
-    traction = np.einsum("nij,nj->ni", stress_tensor, normal_vectors)
+    total_stress_tensor = maxwell_stress_tensor(total_electric_field=total_electric_field, total_magnetic_field=total_magnetic_field)
+    incident_stress_tensor = maxwell_stress_tensor(total_electric_field=incident_electric_field, total_magnetic_field=incident_magnetic_field)
+    interaction_stress_tensor = total_stress_tensor - incident_stress_tensor
+    traction = np.einsum("nij,nj->ni", interaction_stress_tensor, normal_vectors)
     position_vectors = surface_points - center
     torque_density = np.cross(position_vectors, traction)
-    return np.sum(torque_density * area_elements[:, None], axis=0)
+    torque = np.sum(torque_density * area_elements[:, None], axis=0)
+
+    return torque
 
 def recoil_force_noise_psd(E_scat: np.ndarray, wavelength_nm: float, Nteta: int, Nphi: int, r_nm: float, axis_index: int) -> float:
     """
