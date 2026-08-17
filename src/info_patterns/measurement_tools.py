@@ -565,7 +565,28 @@ def heating_rate(S_FF: float, mass_kg: float, Omega_rad_s: float) -> float:
     return float(Gamma_mu)
 
 def maxwell_stress_tensor_from_efield(total_field: np.ndarray) -> np.ndarray:
-    total_field = np.asarray(total_field)
+    """
+    Maxwell Stress Tensor with the form:
+
+
+
+    """
+
     field_dyadic = np.einsum("...i,...j->...ij", total_field, np.conj(total_field))
     field_abs2 = np.sum(np.abs(total_field)**2, axis=-1)
     return (EPS0 / 2) * np.real(field_dyadic - 0.5 * field_abs2[..., None, None] * np.eye(3))
+
+def spherical_integration_surface(radius: float, n_theta: int, n_phi: int, center: np.ndarray = np.zeros(3)):
+    theta = (np.arange(n_theta) + 0.5) * np.pi / n_theta
+    phi = np.arange(n_phi) * 2 * np.pi / n_phi
+    theta_grid, phi_grid = np.meshgrid(theta, phi, indexing="ij")
+    normal_vectors = np.stack([np.sin(theta_grid) * np.cos(phi_grid), np.sin(theta_grid) * np.sin(phi_grid), np.cos(theta_grid)], axis=-1).reshape(-1, 3)
+    surface_points = center + radius * normal_vectors
+    area_elements = (radius**2 * np.sin(theta_grid) * (np.pi / n_theta) * (2 * np.pi / n_phi)).reshape(-1)
+    return surface_points, normal_vectors, area_elements
+
+def force_from_stress_tensor(total_field: np.ndarray, radius: float, n_theta: int, n_phi: int) -> np.ndarray:
+    _, normal_vectors, area_elements = spherical_integration_surface(radius=radius, n_theta=n_theta, n_phi=n_phi)
+    stress_tensor = maxwell_stress_tensor_from_efield(total_field=total_field)
+    traction = np.einsum("nij,nj->ni", stress_tensor, normal_vectors)
+    return np.sum(traction * area_elements[:, None], axis=0)
