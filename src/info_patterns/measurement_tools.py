@@ -14,7 +14,7 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 
 from info_patterns.generate_nanoparticle import nanoparticle_material
 from info_patterns.light_matter_interaction_simulation import (incident_field, field_propagation, simulation_from_geometry)
-from info_patterns.constants import (HBAR, C, EPS0, NM_TO_M, FORCE_CONVERSION, TORQUE_CONVERSION, AXES)
+from info_patterns.constants import (HBAR, C, EPS0, MU0, NM_TO_M, FORCE_CONVERSION, TORQUE_CONVERSION, AXES)
 from info_patterns.parallel_utils import (blas_single_thread_context, resolve_parallel_execution)
 
 def max_detection_efficiency(I_pattern: np.ndarray, Nteta: int, Nphi: int, theta_max: float) -> float:
@@ -564,17 +564,11 @@ def heating_rate(S_FF: float, mass_kg: float, Omega_rad_s: float) -> float:
 
     return float(Gamma_mu)
 
-def maxwell_stress_tensor_from_efield(total_field: np.ndarray) -> np.ndarray:
-    """
-    Maxwell Stress Tensor with the form:
-
-
-
-    """
-
-    field_dyadic = np.einsum("...i,...j->...ij", total_field, np.conj(total_field))
-    field_abs2 = np.sum(np.abs(total_field)**2, axis=-1)
-    return (EPS0 / 2) * np.real(field_dyadic - 0.5 * field_abs2[..., None, None] * np.eye(3))
+def maxwell_stress_tensor(total_electric_field: np.ndarray, total_magnetic_field: np.ndarray, permittivity: float = EPS0, permeability: float = MU0) -> np.ndarray:
+    electric_term = permittivity * np.einsum("...i,...j->...ij", total_electric_field, np.conj(total_electric_field))
+    magnetic_term = permeability * np.einsum("...i,...j->...ij", total_magnetic_field, np.conj(total_magnetic_field))
+    mixed_term =  permittivity * np.sum(np.abs(total_electric_field)**2, axis=-1) + permeability * np.sum(np.abs(total_magnetic_field)**2, axis=-1)
+    return 0.5 * np.real(electric_term + magnetic_term - 0.5 * mixed_term[..., None, None] * np.eye(3))
 
 def spherical_integration_surface(radius: float, n_theta: int, n_phi: int, center: np.ndarray = np.zeros(3)):
     theta = (np.arange(n_theta) + 0.5) * np.pi / n_theta
@@ -585,15 +579,16 @@ def spherical_integration_surface(radius: float, n_theta: int, n_phi: int, cente
     area_elements = (radius**2 * np.sin(theta_grid) * (np.pi / n_theta) * (2 * np.pi / n_phi)).reshape(-1)
     return surface_points, normal_vectors, area_elements
 
-def force_from_stress_tensor(total_field: np.ndarray, radius: float, n_theta: int, n_phi: int) -> np.ndarray:
+def force_from_stress_tensor(total_electric_field: np.ndarray, total_magnetic_field: np.ndarray, radius: float, n_theta: int, n_phi: int) -> np.ndarray:
     _, normal_vectors, area_elements = spherical_integration_surface(radius=radius, n_theta=n_theta, n_phi=n_phi)
-    stress_tensor = maxwell_stress_tensor_from_efield(total_field=total_field)
+    stress_tensor = maxwell_stress_tensor(total_electric_field=total_electric_field, total_magnetic_field=total_magnetic_field)
     traction = np.einsum("nij,nj->ni", stress_tensor, normal_vectors)
     return np.sum(traction * area_elements[:, None], axis=0)
 
-def torque_from_stress_tensor(total_field: np.ndarray, radius: float, n_theta: int, n_phi: int, center: np.ndarray = np.zeros(3)) -> np.ndarray:
+
+def torque_from_stress_tensor(total_electric_field: np.ndarray, total_magnetic_field: np.ndarray, radius: float, n_theta: int, n_phi: int, center: np.ndarray = np.zeros(3)) -> np.ndarray:
     surface_points, normal_vectors, area_elements = spherical_integration_surface(radius=radius, n_theta=n_theta, n_phi=n_phi, center=center)
-    stress_tensor = maxwell_stress_tensor_from_efield(total_field=total_field)
+    stress_tensor = maxwell_stress_tensor(total_electric_field=total_electric_field, total_magnetic_field=total_magnetic_field)
     traction = np.einsum("nij,nj->ni", stress_tensor, normal_vectors)
     position_vectors = surface_points - center
     torque_density = np.cross(position_vectors, traction)

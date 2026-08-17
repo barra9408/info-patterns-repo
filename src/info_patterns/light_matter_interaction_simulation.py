@@ -323,6 +323,10 @@ def scattered_farfield_from_simulation(geometry: np.ndarray, step_nm: float, mat
 
     return farfield
 
+def total_fields_from_simulation(sim: Any, positions_nm: np.ndarray, field_index: int) -> tuple[np.ndarray, np.ndarray]:
+    total_electric_field, total_magnetic_field = linear.nearfield(sim, field_index=field_index, r_probe=positions_nm, which_fields=["Et", "Bt"])
+    return total_electric_field[:, 3:], total_magnetic_field[:, 3:]
+
 def com_scattered_farfield(geometry: np.ndarray, step_nm: float, material: Any, efield: Any, dyads: Any, axis_index: int, disp_nm: float, Nteta: int, Nphi: int, field_index: int, r: float
                            ) -> tuple[tuple[Any, ...], tuple[Any, ...], np.ndarray]:
     """
