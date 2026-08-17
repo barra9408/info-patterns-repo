@@ -563,3 +563,9 @@ def heating_rate(S_FF: float, mass_kg: float, Omega_rad_s: float) -> float:
     Gamma_mu = np.pi * S_FF / (mass_kg * HBAR * Omega_rad_s)
 
     return float(Gamma_mu)
+
+def maxwell_stress_tensor_from_efield(total_field: np.ndarray) -> np.ndarray:
+    total_field = np.asarray(total_field)
+    field_dyadic = np.einsum("...i,...j->...ij", total_field, np.conj(total_field))
+    field_abs2 = np.sum(np.abs(total_field)**2, axis=-1)
+    return (EPS0 / 2) * np.real(field_dyadic - 0.5 * field_abs2[..., None, None] * np.eye(3))
