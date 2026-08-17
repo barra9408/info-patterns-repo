@@ -590,3 +590,11 @@ def force_from_stress_tensor(total_field: np.ndarray, radius: float, n_theta: in
     stress_tensor = maxwell_stress_tensor_from_efield(total_field=total_field)
     traction = np.einsum("nij,nj->ni", stress_tensor, normal_vectors)
     return np.sum(traction * area_elements[:, None], axis=0)
+
+def torque_from_stress_tensor(total_field: np.ndarray, radius: float, n_theta: int, n_phi: int, center: np.ndarray = np.zeros(3)) -> np.ndarray:
+    surface_points, normal_vectors, area_elements = spherical_integration_surface(radius=radius, n_theta=n_theta, n_phi=n_phi, center=center)
+    stress_tensor = maxwell_stress_tensor_from_efield(total_field=total_field)
+    traction = np.einsum("nij,nj->ni", stress_tensor, normal_vectors)
+    position_vectors = surface_points - center
+    torque_density = np.cross(position_vectors, traction)
+    return np.sum(torque_density * area_elements[:, None], axis=0)
