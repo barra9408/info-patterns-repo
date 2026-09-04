@@ -323,6 +323,38 @@ def scattered_farfield_from_simulation(geometry: np.ndarray, step_nm: float, mat
 
     return farfield
 
+def rotation_axis_grid(axis, Nteta, Nphi, r_nm):
+    if axis == "x":
+        e_axis = np.array([1.0, 0.0, 0.0])
+        e_1 = np.array([0.0, 1.0, 0.0])
+        e_2 = np.array([0.0, 0.0, 1.0])
+    elif axis == "y":
+        e_axis = np.array([0.0, 1.0, 0.0])
+        e_1 = np.array([0.0, 0.0, 1.0])
+        e_2 = np.array([1.0, 0.0, 0.0])
+    elif axis == "z":
+        e_axis = np.array([0.0, 0.0, 1.0])
+        e_1 = np.array([1.0, 0.0, 0.0])
+        e_2 = np.array([0.0, 1.0, 0.0])
+
+    theta_values = (np.arange(Nteta) + 0.5) * np.pi / Nteta
+    phi_values = np.arange(Nphi) * 2.0 * np.pi / Nphi
+    theta, phi = np.meshgrid(theta_values, phi_values, indexing="ij")
+
+    directions = np.sin(theta)[..., None] * np.cos(phi)[..., None] * e_1 + np.sin(theta)[..., None] * np.sin(phi)[..., None] * e_2 + np.cos(theta)[..., None] * e_axis
+    positions = r_nm * directions
+
+    r_probe = positions.reshape(-1, 3)
+
+    return theta, phi, r_probe
+
+def scattered_farfield_rotation_axis(simulation, axis, Nteta, Nphi, r_nm, field_index=0):
+    theta, phi, r_probe = rotation_axis_grid(axis=axis, Nteta=Nteta, Nphi=Nphi, r_nm=r_nm)
+    farfield = linear.farfield(simulation, field_index=field_index, r_probe=r_probe, return_value="efield", normalization_E0=False)
+    E_scat = np.asarray(farfield[0]).reshape(Nteta, Nphi, 3)
+
+    return theta, phi, E_scat
+
 def total_fields_from_simulation(sim: Any, positions_nm: np.ndarray, field_index: int) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     scattered_electric_data, scattered_magnetic_data, incident_electric_data, incident_magnetic_data = linear.nearfield(sim, field_index=field_index, r_probe=positions_nm, which_fields=["Es", "Hs", "E0", "H0"])
 

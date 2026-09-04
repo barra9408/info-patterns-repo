@@ -274,3 +274,37 @@ def heating_rate(S_FF: float, mass_kg: float, Omega_rad_s: float) -> float:
 
     return float(Gamma_mu)
 
+def spin_integral(theta, phi, E_scat):
+    E_scat_abs2 = np.sum(np.abs(E_scat)**2, axis=2)
+    dtheta = theta[1, 0] - theta[0, 0]
+    dphi = phi[0, 1] - phi[0, 0]
+
+    integrand = np.cos(theta)**2 * E_scat_abs2 * np.sin(theta)
+    integral = np.sum(integrand) * dtheta * dphi
+
+    return integral
+
+def orbital_integral(theta, phi, E_scat):
+    dtheta = theta[1, 0] - theta[0, 0]
+    dphi = phi[0, 1] - phi[0, 0]
+    dE_dphi = (np.roll(E_scat, -1, axis=1) - np.roll(E_scat, 1, axis=1)) / (2.0 * dphi)
+    dE_dphi_abs2 = np.sum(np.abs(dE_dphi)**2, axis=2)
+
+    integrand = dE_dphi_abs2 * np.sin(theta)
+    integral = np.sum(integrand) * dtheta * dphi
+
+    return integral
+
+def torque_noise_channels(wavelength_nm, r_nm, theta, phi, E_scat):
+    wavelength_m = wavelength_nm * NM_TO_M
+    omega = 2.0 * np.pi * C / wavelength_m
+    r_m = r_nm * NM_TO_M
+
+    factor = HBAR * EPS0 * C * r_m**2 / (2.0 * omega)
+    spin_value = spin_integral(theta=theta, phi=phi, E_scat=E_scat)
+    spin_channel = factor * spin_value
+    orbital_value = orbital_integral(theta=theta, phi=phi, E_scat=E_scat)
+    orbital_channel = factor * orbital_value
+    total_channels = spin_channel + orbital_channel
+
+    return spin_channel, orbital_channel, total_channels
